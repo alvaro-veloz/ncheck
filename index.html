@@ -1,0 +1,1095 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>nCheck — ¿Quién no te sigue de vuelta en Instagram?</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%230d0d14'/><text y='.9em' font-size='72' font-family='Georgia,serif' font-weight='900' fill='%23c8f04a' x='12'>n</text></svg>">
+
+<!-- Meta OG -->
+<meta property="og:title" content="nCheck — ¿Quién no te sigue de vuelta?">
+<meta property="og:description" content="Extensión de Chrome gratuita para Instagram. Descubre quién no te sigue de vuelta. Sin contraseñas, sin apps raras. Hecho por Andina Web Studio.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://andinawebstudio.com/ncheck">
+<meta property="og:image" content="https://andinawebstudio.com/ncheck/og.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="nCheck — ¿Quién no te sigue de vuelta?">
+<meta name="twitter:description" content="Extensión de Chrome gratuita para Instagram. Sin contraseñas, sin apps raras.">
+<meta name="description" content="Extensión de Chrome gratuita para Instagram. Descubre quién no te sigue de vuelta en Instagram. Sin contraseñas, sin servidores externos. Hecho por Andina Web Studio.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #050508;
+    --bg2: #0d0d14;
+    --bg3: #13131e;
+    --accent: #c8f04a;
+    --accent2: #7c5cfc;
+    --text: #f0ede8;
+    --muted: #888899;
+    --border: rgba(255,255,255,0.07);
+    --card: rgba(255,255,255,0.04);
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 16px;
+    line-height: 1.6;
+    overflow-x: hidden;
+  }
+
+  /* NAV */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1.25rem 2.5rem;
+    background: rgba(5,5,8,0.85);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .logo {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 1.3rem;
+    color: var(--accent);
+    letter-spacing: -0.02em;
+  }
+
+  .logo span { color: var(--text); }
+
+  nav a {
+    color: var(--muted);
+    text-decoration: none;
+    font-size: 0.9rem;
+    transition: color 0.2s;
+  }
+
+  nav a:hover { color: var(--text); }
+
+  .nav-links { display: flex; gap: 2rem; align-items: center; }
+
+  .btn-nav {
+    background: var(--accent);
+    color: #050508 !important;
+    font-weight: 600;
+    padding: 0.5rem 1.25rem;
+    border-radius: 100px;
+    font-size: 0.85rem !important;
+    transition: opacity 0.2s, transform 0.15s !important;
+  }
+
+  .btn-nav:hover { opacity: 0.88; transform: translateY(-1px); }
+
+  /* HERO */
+  .hero {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 8rem 2rem 6rem;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero-glow {
+    position: absolute;
+    width: 800px; height: 800px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(124,92,252,0.18) 0%, transparent 70%);
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+  }
+
+  .hero-glow2 {
+    position: absolute;
+    width: 500px; height: 500px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(200,240,74,0.1) 0%, transparent 70%);
+    top: 30%; left: 60%;
+    pointer-events: none;
+  }
+
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: rgba(200,240,74,0.1);
+    border: 1px solid rgba(200,240,74,0.25);
+    color: var(--accent);
+    font-size: 0.8rem;
+    font-weight: 500;
+    padding: 0.4rem 1rem;
+    border-radius: 100px;
+    margin-bottom: 2rem;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+
+  .badge-dot {
+    width: 6px; height: 6px;
+    background: var(--accent);
+    border-radius: 50%;
+    animation: pulse 2s infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.3; }
+  }
+
+  h1 {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: clamp(3rem, 8vw, 7rem);
+    line-height: 0.95;
+    letter-spacing: -0.03em;
+    margin-bottom: 1.5rem;
+    position: relative;
+  }
+
+  h1 em {
+    font-style: normal;
+    color: var(--accent);
+    display: block;
+  }
+
+  .hero-sub {
+    font-size: clamp(1rem, 2vw, 1.25rem);
+    color: var(--muted);
+    max-width: 540px;
+    margin: 0 auto 3rem;
+    font-weight: 300;
+    line-height: 1.7;
+  }
+
+  .hero-sub strong { color: var(--text); font-weight: 500; }
+
+  .hero-cta {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-bottom: 4rem;
+  }
+
+  .btn-primary {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    background: var(--accent);
+    color: #050508;
+    font-weight: 700;
+    font-size: 1rem;
+    padding: 0.9rem 2rem;
+    border-radius: 100px;
+    text-decoration: none;
+    transition: transform 0.2s, box-shadow 0.2s;
+    font-family: 'DM Sans', sans-serif;
+  }
+
+  .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 40px rgba(200,240,74,0.3);
+  }
+
+  .btn-secondary {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    background: transparent;
+    color: var(--text);
+    font-weight: 500;
+    font-size: 1rem;
+    padding: 0.9rem 2rem;
+    border-radius: 100px;
+    border: 1px solid var(--border);
+    text-decoration: none;
+    transition: border-color 0.2s, background 0.2s;
+    font-family: 'DM Sans', sans-serif;
+  }
+
+  .btn-secondary:hover {
+    border-color: rgba(255,255,255,0.2);
+    background: rgba(255,255,255,0.04);
+  }
+
+  /* HERO VISUAL */
+  .hero-visual {
+    position: relative;
+    max-width: 700px;
+    margin: 0 auto;
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    overflow: hidden;
+  }
+
+  .window-bar {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.9rem 1.25rem;
+    border-bottom: 1px solid var(--border);
+    background: var(--bg2);
+  }
+
+  .dot { width: 12px; height: 12px; border-radius: 50%; }
+  .dot-r { background: #ff5f57; }
+  .dot-y { background: #febc2e; }
+  .dot-g { background: #28c840; }
+
+  .window-title {
+    flex: 1;
+    text-align: center;
+    font-size: 0.78rem;
+    color: var(--muted);
+  }
+
+  .app-ui {
+    padding: 1.5rem;
+  }
+
+  .scan-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1.25rem;
+  }
+
+  .scan-title {
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 1rem;
+  }
+
+  .scan-badge {
+    background: rgba(200,240,74,0.12);
+    color: var(--accent);
+    font-size: 0.72rem;
+    padding: 0.25rem 0.75rem;
+    border-radius: 100px;
+    font-weight: 600;
+  }
+
+  .user-row {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.65rem 0.85rem;
+    border-radius: 10px;
+    margin-bottom: 0.4rem;
+    transition: background 0.15s;
+  }
+
+  .user-row:hover { background: rgba(255,255,255,0.04); }
+
+  .avatar {
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: #050508;
+  }
+
+  .user-info { flex: 1; min-width: 0; }
+
+  .user-name {
+    font-size: 0.85rem;
+    font-weight: 500;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .user-handle {
+    font-size: 0.72rem;
+    color: var(--muted);
+  }
+
+  .tag {
+    font-size: 0.7rem;
+    padding: 0.2rem 0.6rem;
+    border-radius: 100px;
+    font-weight: 600;
+    flex-shrink: 0;
+  }
+
+  .tag-no {
+    background: rgba(224,64,64,0.12);
+    color: #f07070;
+  }
+
+  .tag-yes {
+    background: rgba(200,240,74,0.1);
+    color: var(--accent);
+  }
+
+  /* STATS BAR */
+  .stats-bar {
+    display: flex;
+    gap: 1px;
+    margin-bottom: 1.25rem;
+    background: var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+
+  .stat-item {
+    flex: 1;
+    padding: 0.65rem 0.5rem;
+    background: var(--bg2);
+    text-align: center;
+  }
+
+  .stat-num {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 1.3rem;
+    display: block;
+  }
+
+  .stat-lbl {
+    font-size: 0.65rem;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+
+  /* SECTION COMMON */
+  section { padding: 6rem 2rem; }
+
+  .container { max-width: 1100px; margin: 0 auto; }
+
+  .section-label {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--accent);
+    font-weight: 600;
+    margin-bottom: 1rem;
+  }
+
+  h2 {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: clamp(2rem, 5vw, 3.5rem);
+    letter-spacing: -0.03em;
+    line-height: 1.05;
+    margin-bottom: 1.25rem;
+  }
+
+  h2 em { font-style: normal; color: var(--accent); }
+
+  .section-sub {
+    font-size: 1.1rem;
+    color: var(--muted);
+    max-width: 520px;
+    line-height: 1.7;
+    font-weight: 300;
+  }
+
+  /* HOW IT WORKS */
+  .steps {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.5rem;
+    margin-top: 3.5rem;
+  }
+
+  .step {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 2rem 1.5rem;
+    position: relative;
+    transition: border-color 0.2s, transform 0.2s;
+  }
+
+  .step:hover {
+    border-color: rgba(200,240,74,0.2);
+    transform: translateY(-3px);
+  }
+
+  .step-num {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 3rem;
+    color: rgba(200,240,74,0.15);
+    line-height: 1;
+    margin-bottom: 1rem;
+  }
+
+  .step h3 {
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 1.1rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .step p {
+    font-size: 0.9rem;
+    color: var(--muted);
+    line-height: 1.6;
+  }
+
+  /* TRANSPARENCY SECTION */
+  .transparency {
+    background: var(--bg2);
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .transparency-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4rem;
+    align-items: center;
+  }
+
+  @media (max-width: 768px) {
+    .transparency-grid { grid-template-columns: 1fr; gap: 2rem; }
+    .nav-links { display: none; }
+    nav { padding: 1rem 1.5rem; }
+  }
+
+  .truth-list { list-style: none; margin-top: 2rem; }
+
+  .truth-list li {
+    display: flex;
+    gap: 1rem;
+    padding: 1rem 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 0.95rem;
+    line-height: 1.5;
+  }
+
+  .truth-list li:last-child { border-bottom: none; }
+
+  .truth-icon {
+    width: 24px; height: 24px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.75rem;
+    margin-top: 2px;
+  }
+
+  .ti-yes { background: rgba(200,240,74,0.15); color: var(--accent); }
+  .ti-no { background: rgba(224,64,64,0.12); color: #f07070; }
+
+  .truth-text strong { color: var(--text); display: block; font-weight: 500; margin-bottom: 0.15rem; }
+  .truth-text span { color: var(--muted); font-size: 0.85rem; }
+
+  /* AFFILIATES */
+  .affiliates-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1rem;
+    margin-top: 3rem;
+  }
+
+  .aff-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 1.5rem;
+    transition: border-color 0.2s, transform 0.2s;
+    text-decoration: none;
+    color: var(--text);
+    display: block;
+  }
+
+  .aff-card:hover {
+    border-color: rgba(255,255,255,0.15);
+    transform: translateY(-2px);
+  }
+
+  .aff-logo {
+    width: 44px; height: 44px;
+    border-radius: 10px;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .aff-logo svg {
+    width: 26px; height: 26px;
+  }
+
+  .aff-name {
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 0.95rem;
+    margin-bottom: 0.25rem;
+  }
+
+  .aff-desc {
+    font-size: 0.8rem;
+    color: var(--muted);
+    line-height: 1.5;
+    margin-bottom: 0.75rem;
+  }
+
+  .aff-tag {
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+
+  /* DONATE */
+  .donate-section { text-align: center; }
+
+  .donate-cards {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-top: 3rem;
+  }
+
+  .donate-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 2rem 2.5rem;
+    min-width: 200px;
+    transition: border-color 0.2s, transform 0.2s;
+  }
+
+  .donate-card:hover {
+    border-color: rgba(200,240,74,0.25);
+    transform: translateY(-3px);
+  }
+
+  .donate-card.featured {
+    border-color: rgba(200,240,74,0.35);
+    background: rgba(200,240,74,0.05);
+  }
+
+  .donate-amount {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 2.5rem;
+    color: var(--accent);
+    display: block;
+    margin-bottom: 0.25rem;
+  }
+
+  .donate-label {
+    font-size: 0.85rem;
+    color: var(--muted);
+    margin-bottom: 1.5rem;
+    display: block;
+  }
+
+  .btn-donate {
+    display: inline-block;
+    background: var(--accent);
+    color: #050508;
+    font-weight: 700;
+    font-size: 0.85rem;
+    padding: 0.65rem 1.5rem;
+    border-radius: 100px;
+    text-decoration: none;
+    transition: opacity 0.2s, transform 0.15s;
+    font-family: 'DM Sans', sans-serif;
+  }
+
+  .btn-donate:hover { opacity: 0.85; transform: translateY(-1px); }
+
+  .btn-donate-outline {
+    display: inline-block;
+    background: transparent;
+    color: var(--text);
+    font-weight: 500;
+    font-size: 0.85rem;
+    padding: 0.65rem 1.5rem;
+    border-radius: 100px;
+    border: 1px solid var(--border);
+    text-decoration: none;
+    transition: border-color 0.2s, background 0.2s;
+    font-family: 'DM Sans', sans-serif;
+  }
+
+  .btn-donate-outline:hover {
+    border-color: rgba(255,255,255,0.2);
+    background: rgba(255,255,255,0.04);
+  }
+
+  /* FOOTER */
+  footer {
+    padding: 3rem 2rem;
+    border-top: 1px solid var(--border);
+    text-align: center;
+  }
+
+  .footer-logo {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 1.5rem;
+    color: var(--accent);
+    margin-bottom: 0.5rem;
+  }
+
+  .footer-logo span { color: var(--text); }
+
+  .footer-by {
+    font-size: 0.85rem;
+    color: var(--muted);
+    margin-bottom: 1.5rem;
+  }
+
+  .footer-by a {
+    color: var(--accent);
+    text-decoration: none;
+  }
+
+  .footer-links {
+    display: flex;
+    gap: 1.5rem;
+    justify-content: center;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+  }
+
+  .footer-links a {
+    font-size: 0.85rem;
+    color: var(--muted);
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+
+  .footer-links a:hover { color: var(--text); }
+
+  .footer-legal {
+    font-size: 0.75rem;
+    color: rgba(136,136,153,0.5);
+    max-width: 600px;
+    margin: 0 auto;
+    line-height: 1.7;
+  }
+
+  /* ANIMATIONS */
+  .fade-up {
+    opacity: 0;
+    transform: translateY(30px);
+    animation: fadeUp 0.7s forwards;
+  }
+
+  @keyframes fadeUp {
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .delay-1 { animation-delay: 0.1s; }
+  .delay-2 { animation-delay: 0.2s; }
+  .delay-3 { animation-delay: 0.35s; }
+  .delay-4 { animation-delay: 0.5s; }
+  .delay-5 { animation-delay: 0.65s; }
+
+  /* SCROLL REVEAL */
+  .reveal {
+    opacity: 0;
+    transform: translateY(24px);
+    transition: opacity 0.6s, transform 0.6s;
+  }
+
+  .reveal.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="logo">n<span>Check</span></div>
+  <div class="nav-links">
+    <a href="#como-funciona">Cómo funciona</a>
+    <a href="#transparencia">Transparencia</a>
+    <a href="#apoyanos">Apóyanos</a>
+    <a href="#descargar" class="btn-nav">Descargar gratis</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-glow"></div>
+  <div class="hero-glow2"></div>
+
+  <div class="badge fade-up">
+    <div class="badge-dot"></div>
+    100% gratis — sin trampas
+  </div>
+
+  <h1 class="fade-up delay-1">
+    Descubre quién<br>
+    <em>no te sigue</em><br>
+    de vuelta
+  </h1>
+
+  <p class="hero-sub fade-up delay-2">
+    Extensión de Chrome para Instagram. <strong>Sin contraseñas, sin apps raras.</strong>
+    Usa tu sesión activa y te da el resultado en segundos.
+  </p>
+
+  <div class="hero-cta fade-up delay-3">
+    <a href="#descargar" class="btn-primary">
+      ↓ Descargar extensión
+    </a>
+    <a href="#como-funciona" class="btn-secondary">
+      Ver cómo funciona
+    </a>
+  </div>
+
+  <div class="hero-visual fade-up delay-4">
+    <div class="window-bar">
+      <div class="dot dot-r"></div>
+      <div class="dot dot-y"></div>
+      <div class="dot dot-g"></div>
+      <div class="window-title">nCheck — Instagram Unfollowers</div>
+    </div>
+    <div class="app-ui">
+      <div class="stats-bar">
+        <div class="stat-item">
+          <span class="stat-num" style="color: var(--text);">1,247</span>
+          <span class="stat-lbl">Seguidores</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-num" style="color: var(--text);">934</span>
+          <span class="stat-lbl">Siguiendo</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-num" style="color: #f07070;">183</span>
+          <span class="stat-lbl">No siguen</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-num" style="color: var(--accent);">751</span>
+          <span class="stat-lbl">Recíprocos</span>
+        </div>
+      </div>
+
+      <div class="scan-header">
+        <div class="scan-title">No te siguen de vuelta</div>
+        <div class="scan-badge">183 encontrados</div>
+      </div>
+
+      <div class="user-row">
+        <div class="avatar" style="background: #7c5cfc;">MR</div>
+        <div class="user-info">
+          <div class="user-name">María Rodríguez</div>
+          <div class="user-handle">@maria.rodriguez</div>
+        </div>
+        <div class="tag tag-no">No sigue</div>
+      </div>
+
+      <div class="user-row">
+        <div class="avatar" style="background: #c8f04a; color:#050508">JT</div>
+        <div class="user-info">
+          <div class="user-name">Juan Torres</div>
+          <div class="user-handle">@juantorres_ec</div>
+        </div>
+        <div class="tag tag-yes">Recíproco</div>
+      </div>
+
+      <div class="user-row">
+        <div class="avatar" style="background: #f07070; color:#050508">VP</div>
+        <div class="user-info">
+          <div class="user-name">Valentina Pérez</div>
+          <div class="user-handle">@vale.perez</div>
+        </div>
+        <div class="tag tag-no">No sigue</div>
+      </div>
+
+      <div class="user-row">
+        <div class="avatar" style="background: #4ac8f0; color:#050508">AL</div>
+        <div class="user-info">
+          <div class="user-name">Andrés Luna</div>
+          <div class="user-handle">@andres.luna</div>
+        </div>
+        <div class="tag tag-no">No sigue</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CÓMO FUNCIONA -->
+<section id="como-funciona">
+  <div class="container">
+    <div class="reveal">
+      <div class="section-label">Cómo funciona</div>
+      <h2>Simple. Rápido.<br><em>Sin magia negra.</em></h2>
+      <p class="section-sub">Tres pasos y ya sabes la verdad. Sin apps de terceros, sin dar tu contraseña a nadie.</p>
+    </div>
+
+    <div class="steps">
+      <div class="step reveal">
+        <div class="step-num">01</div>
+        <h3>Abre Instagram</h3>
+        <p>Inicia sesión en Instagram desde Chrome como siempre. La extensión usa tu sesión activa, no te pide contraseña.</p>
+      </div>
+      <div class="step reveal">
+        <div class="step-num">02</div>
+        <h3>Activa nCheck</h3>
+        <p>Haz clic en el ícono de la extensión. Se abre una pestaña nueva y empieza el escaneo automáticamente.</p>
+      </div>
+      <div class="step reveal">
+        <div class="step-num">03</div>
+        <h3>Ve el resultado</h3>
+        <p>En minutos tienes la lista completa: quién te sigue, quién no, y cuántos son recíprocos.</p>
+      </div>
+      <div class="step reveal">
+        <div class="step-num">04</div>
+        <h3>Desinstala si quieres</h3>
+        <p>Ya terminaste, no la necesitas más. La eliminas y listo. Sin cuentas, sin suscripciones, sin dramas.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TRANSPARENCIA -->
+<section class="transparency" id="transparencia">
+  <div class="container">
+    <div class="transparency-grid">
+      <div class="reveal">
+        <div class="section-label">Transparencia total</div>
+        <h2>Sin letras<br><em>pequeñas.</em></h2>
+        <p class="section-sub">Otras extensiones hacen cosas raras en segundo plano sin decirte. Nosotros te contamos exactamente qué pasa.</p>
+      </div>
+
+      <div class="reveal">
+        <ul class="truth-list">
+          <li>
+            <div class="truth-icon ti-yes">✓</div>
+            <div class="truth-text">
+              <strong>Tu contraseña nunca sale de tu navegador</strong>
+              <span>Usamos tu sesión activa de Instagram. Sin formularios, sin servidores, sin nada.</span>
+            </div>
+          </li>
+          <li>
+            <div class="truth-icon ti-yes">✓</div>
+            <div class="truth-text">
+              <strong>Código 100% abierto e inspeccionable</strong>
+              <span>Cualquier persona técnica puede revisar qué hace la extensión. Sin sorpresas escondidas.</span>
+            </div>
+          </li>
+          <li>
+            <div class="truth-icon ti-yes">✓</div>
+            <div class="truth-text">
+              <strong>Mostramos enlaces de afiliados de forma visible</strong>
+              <span>Recomendamos herramientas que usamos. Si las compras por nuestros links, ganamos una comisión. Tú no pagas más.</span>
+            </div>
+          </li>
+          <li>
+            <div class="truth-icon ti-no">✗</div>
+            <div class="truth-text">
+              <strong>No vendemos tus datos</strong>
+              <span>No guardamos nombres de usuario, seguidores ni nada. Todo queda en tu navegador.</span>
+            </div>
+          </li>
+          <li>
+            <div class="truth-icon ti-no">✗</div>
+            <div class="truth-text">
+              <strong>No redirigimos tus búsquedas en Google</strong>
+              <span>Otras extensiones lo hacen sin avisarte para ganar comisión. Nosotros no.</span>
+            </div>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- AFILIADOS -->
+<section id="afiliados">
+  <div class="container">
+    <div class="reveal" style="text-align:center; max-width: 600px; margin: 0 auto 1rem;">
+      <div class="section-label">Herramientas recomendadas</div>
+      <h2>Cosas que<br><em>realmente usamos</em></h2>
+      <p class="section-sub" style="margin: 0 auto;">Así mantenemos nCheck gratuito. Si compras por estos links ganamos una pequeña comisión, sin costo extra para ti.</p>
+    </div>
+
+    <div class="affiliates-grid">
+
+      <a href="https://hostinger.com" target="_blank" rel="noopener" class="aff-card reveal">
+        <div class="aff-logo" style="background:rgba(101,64,255,0.15);">
+          <img src="https://cdn.jsdelivr.net/npm/simple-icons@latest/icons/hostinger.svg" width="28" height="28" alt="Hostinger" style="filter: invert(30%) sepia(90%) saturate(600%) hue-rotate(240deg);">
+        </div>
+        <div class="aff-name">Hostinger</div>
+        <div class="aff-desc">Hosting y dominios para tu negocio o portafolio. Lo usamos con nuestros clientes.</div>
+        <div class="aff-tag">Hosting · Dominios</div>
+      </a>
+
+      <a href="https://canva.com" target="_blank" rel="noopener" class="aff-card reveal">
+        <div class="aff-logo" style="background:rgba(0,195,213,0.12);">
+          <img src="https://cdn.jsdelivr.net/npm/simple-icons@latest/icons/canva.svg" width="28" height="28" alt="Canva" style="filter: invert(62%) sepia(98%) saturate(400%) hue-rotate(155deg);">
+        </div>
+        <div class="aff-name">Canva Pro</div>
+        <div class="aff-desc">Diseño de contenido para Instagram, stories, reels. Ideal si manejas redes sociales.</div>
+        <div class="aff-tag">Diseño · Redes sociales</div>
+      </a>
+
+      <a href="https://nordvpn.com" target="_blank" rel="noopener" class="aff-card reveal">
+        <div class="aff-logo" style="background:rgba(68,100,211,0.15);">
+          <img src="https://cdn.jsdelivr.net/npm/simple-icons@latest/icons/nordvpn.svg" width="28" height="28" alt="NordVPN" style="filter: invert(30%) sepia(80%) saturate(500%) hue-rotate(200deg);">
+        </div>
+        <div class="aff-name">NordVPN</div>
+        <div class="aff-desc">Protege tu conexión y tu cuenta de Instagram de redes públicas inseguras.</div>
+        <div class="aff-tag">Privacidad · Seguridad</div>
+      </a>
+
+      <a href="https://namecheap.com" target="_blank" rel="noopener" class="aff-card reveal">
+        <div class="aff-logo" style="background:rgba(222,89,55,0.12);">
+          <img src="https://cdn.jsdelivr.net/npm/simple-icons@latest/icons/namecheap.svg" width="28" height="28" alt="Namecheap" style="filter: invert(45%) sepia(80%) saturate(500%) hue-rotate(340deg);">
+        </div>
+        <div class="aff-name">Namecheap</div>
+        <div class="aff-desc">Dominios baratos para tu web o negocio. Alternativa económica y confiable.</div>
+        <div class="aff-tag">Dominios · Web</div>
+      </a>
+
+      <a href="https://spotify.com" target="_blank" rel="noopener" class="aff-card reveal">
+        <div class="aff-logo" style="background:rgba(30,215,96,0.12);">
+          <img src="https://cdn.jsdelivr.net/npm/simple-icons@latest/icons/spotify.svg" width="28" height="28" alt="Spotify" style="filter: invert(65%) sepia(90%) saturate(400%) hue-rotate(90deg);">
+        </div>
+        <div class="aff-name">Spotify Premium</div>
+        <div class="aff-desc">Música sin anuncios mientras navegas. Primer mes gratis con este link.</div>
+        <div class="aff-tag">Música · Entretenimiento</div>
+      </a>
+
+      <a href="https://aliexpress.com" target="_blank" rel="noopener" class="aff-card reveal">
+        <div class="aff-logo" style="background:rgba(255,103,64,0.12);">
+          <img src="https://cdn.jsdelivr.net/npm/simple-icons@latest/icons/aliexpress.svg" width="28" height="28" alt="AliExpress" style="filter: invert(50%) sepia(90%) saturate(500%) hue-rotate(340deg);">
+        </div>
+        <div class="aff-name">AliExpress</div>
+        <div class="aff-desc">De todo a precios increíbles. Ropa, accesorios, gadgets con envío gratis.</div>
+        <div class="aff-tag">Shopping · Gadgets</div>
+      </a>
+
+      <a href="https://ebay.com" target="_blank" rel="noopener" class="aff-card reveal">
+        <div class="aff-logo" style="background:rgba(255,153,0,0.12);">
+          <img src="https://cdn.jsdelivr.net/npm/simple-icons@latest/icons/ebay.svg" width="28" height="28" alt="eBay" style="filter: invert(65%) sepia(80%) saturate(600%) hue-rotate(5deg);">
+        </div>
+        <div class="aff-name">eBay</div>
+        <div class="aff-desc">Millones de productos nuevos y usados. Tecnología, ropa, coleccionables y más.</div>
+        <div class="aff-tag">Shopping · Todo</div>
+      </a>
+
+      <a href="https://shopify.com" target="_blank" rel="noopener" class="aff-card reveal">
+        <div class="aff-logo" style="background:rgba(150,191,71,0.12);">
+          <img src="https://cdn.jsdelivr.net/npm/simple-icons@latest/icons/shopify.svg" width="28" height="28" alt="Shopify" style="filter: invert(60%) sepia(60%) saturate(400%) hue-rotate(60deg);">
+        </div>
+        <div class="aff-name">Shopify</div>
+        <div class="aff-desc">Monta tu tienda online fácilmente. Ideal si quieres vender por Instagram o redes.</div>
+        <div class="aff-tag">E-commerce · Tienda</div>
+      </a>
+
+    </div>
+  </div>
+</section>
+
+<!-- DONAR -->
+<section id="apoyanos" class="donate-section" style="background: var(--bg2); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border);">
+  <div class="container">
+    <div class="reveal">
+      <div class="section-label">Apóyanos</div>
+      <h2>¿Te fue útil?<br><em>Invítame un café</em></h2>
+      <p class="section-sub" style="margin: 0 auto; text-align:center;">
+        nCheck es gratis y siempre lo será. Si quieres apoyar el proyecto, cualquier aporte ayuda a mantenerlo actualizado cuando Instagram cambie sus cosas.
+      </p>
+    </div>
+
+    <div class="donate-cards">
+      <div class="donate-card reveal">
+        <span class="donate-amount">$1</span>
+        <span class="donate-label">Un cafecito</span>
+        <a href="https://paypal.me/alvaroveloz/1" target="_blank" class="btn-donate-outline">Aportar</a>
+      </div>
+      <div class="donate-card featured reveal">
+        <span class="donate-amount">$3</span>
+        <span class="donate-label">El clásico ☕</span>
+        <a href="https://paypal.me/alvaroveloz/3" target="_blank" class="btn-donate">Aportar con PayPal</a>
+      </div>
+      <div class="donate-card reveal">
+        <span class="donate-amount">$5</span>
+        <span class="donate-label">Grande y con leche</span>
+        <a href="https://paypal.me/alvaroveloz/5" target="_blank" class="btn-donate-outline">Aportar</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- DESCARGAR -->
+<section id="descargar" style="text-align:center;">
+  <div class="container">
+    <div class="reveal">
+      <div class="section-label">Descarga</div>
+      <h2>Gratis. Limpio.<br><em>Sin cuentas.</em></h2>
+      <p class="section-sub" style="margin: 0 auto 2.5rem;">
+        Descarga el ZIP, cárgalo en Chrome como extensión desempaquetada y listo. No necesitas crear ninguna cuenta.
+      </p>
+      <a href="#" class="btn-primary" style="font-size:1.1rem; padding: 1rem 2.5rem;">
+        ↓ Descargar nCheck gratis
+      </a>
+      <p style="margin-top: 1rem; font-size: 0.8rem; color: var(--muted);">
+        Chrome · Extensión desempaquetada · v1.0.0
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">n<span>Check</span></div>
+  <p class="footer-by">
+    Hecho con cariño por <a href="https://andinawebstudio.com" target="_blank">Andina Web Studio</a>
+  </p>
+  <div class="footer-links">
+    <a href="#como-funciona">Cómo funciona</a>
+    <a href="#transparencia">Transparencia</a>
+    <a href="#afiliados">Afiliados</a>
+    <a href="#apoyanos">Apóyanos</a>
+    <a href="https://paypal.me/alvaroveloz" target="_blank">PayPal</a>
+  </div>
+  <p class="footer-legal">
+    nCheck no está afiliado con Instagram ni Meta. Esta extensión usa la sesión activa de tu navegador para leer información pública de tu cuenta. Algunos enlaces en esta página son de afiliados: si compras a través de ellos, recibimos una pequeña comisión sin costo adicional para ti. Código disponible para revisión pública.
+  </p>
+</footer>
+
+<script>
+  const reveals = document.querySelectorAll('.reveal');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.classList.add('visible');
+      }
+    });
+  }, { threshold: 0.1 });
+  reveals.forEach(r => observer.observe(r));
+</script>
+
+</body>
+</html>
